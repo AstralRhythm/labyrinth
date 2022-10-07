@@ -1,8 +1,6 @@
 import random
 import math
 
-# LOOSE ENDS TO FIX:
-# findPath() not finding paths from a tile to a tile vertically above it??? but works the other way around
 
 class tile:
   # a tile is the basic unit used for the game
@@ -74,22 +72,6 @@ def checkCoords():
 def displayTile(displayee:tile):
   print("+---+\n|"+displayee.pic[0]+"|\n|"+displayee.pic[1]+"|\n|"+displayee.pic[2]+"|\n+---+")
 
-''''
-def makeGoalPic(newGoal:tile,character:str):
-  # makes a tile the goal space
-  global goalTile
-  goalTile=tile(-3,-3,[newGoal.pic[0],newGoal.pic[1][0:1]+str(character)+newGoal.pic[1][2:3],newGoal.pic[2]])
-  boardList[newGoal.x][newGoal.y].pic=goalTile.pic
-  if fStr!="": updateFStr()
-
-def makePlayerTilePic(newPlayerTile:tile,character:str):
-  # makes a tile the player's position
-  global playerTile
-  playerTile=tile(-4,-4,[newPlayerTile.pic[0],newPlayerTile.pic[1][0:1]+str(character)+newPlayerTile.pic[1][2:3],newPlayerTile.pic[2]])
-  boardList[newPlayerTile.x][newPlayerTile.y].pic=playerTile.pic
-  if fStr!="": updateFStr()
-'''
-
 # left() and right() determine what character should go on either side of a row in the final picture
 def right(n:int,m:int):
   if n%2==1: return("|← ")
@@ -114,7 +96,11 @@ def updateFStr():
     fStr+="   +---+---+---+---+---+---+---+---+---+---+---+\n"
   fStr+="     0  ↑↑↑  2  ↑↑↑  4  ↑↑↑  6  ↑↑↑  8  ↑↑↑  10"
   fStr+="\n\n  Extra Tile:\n\n     +---+\n     |"+extraTile.pic[0]+"|\n     |"+extraTile.pic[1]+"|\n     |"+extraTile.pic[2]+"|\n     +---+\n"
-
+  while "▓" not in fStr:
+    #about once every ten times the board was generated the end tiles wouldn't be colored correctly and i couldnt figure out why so this fixes that if it happens
+    boardList[endCo1[0]][endCo1[1]].pic=makeEndPic(boardList[endCo1[0]][endCo1[1]])
+    boardList[endCo2[0]][endCo2[1]].pic=makeEndPic(boardList[endCo2[0]][endCo2[1]])
+    updateFStr()
 
 def rotateTile(spTile:tile,direction:str):
   # function that outputs a tile rotated the specified direction
@@ -169,12 +155,13 @@ def move(x:int,y:int):
   global extraTile
   global endCo1
   global endCo2
-  if findPath(str(endCo1[0])+","+str(endCo1[1]),str(endCo2[0])+","+str(endCo2[1]))!=False: print("!!!")
   if x==2 or x==4 or x==6 or x==8 or y==2 or y==4 or (x+y)%2==0: 
     return "error: 04"
   elif y==0:
     boardList[x].insert(0,extraTile)
     extraTile=boardList[x][7]
+    if endCo1==[x,6]: endCo1=[-2,-2]
+    elif endCo2==[x,6]: endCo2=[-2,-2]
     boardList[x].pop(7)
     for n in range(7):
       if boardList[x][n]==endTile2: endCo2=[x,n]
@@ -183,6 +170,8 @@ def move(x:int,y:int):
   elif y==6:
     boardList[x].append(extraTile)
     extraTile=boardList[x][0]
+    if endCo1==[x,0]: endCo1=[-2,-2]
+    elif endCo2==[x,0]: endCo2=[-2,-2]
     boardList[x].pop(0)
     for n in range(7):
       if boardList[x][n]==endTile2: endCo2=[x,n]
@@ -190,26 +179,34 @@ def move(x:int,y:int):
       boardList[x][n].updateCoords(x,n)
   elif x==0:
     savedTile=boardList[10][y]
+    if endCo1==[10,y]: endCo1=[-2,-2]
+    elif endCo2==[10,y]: endCo2=[-2,-2]
     for n in range(10):
       boardList[10-n][y]=boardList[9-n][y]
       if boardList[10-n][y]==endTile2: endCo2=[10-n,y]
-      if boardList[10-n][y]==endTile1: endCo1=[9-n,y]
+      if boardList[10-n][y]==endTile1: endCo1=[10-n,y]
       boardList[10-n][y].updateCoords(10-n,y)
     boardList[0][y]=extraTile
     boardList[0][y].updateCoords(0,y)
+    if endCo1==[-2,-2] and "▓" in boardList[0][y].pic[1]: endCo1=[0,y]
+    elif endCo2==[-2,-2] and "▓" in boardList[0][y].pic[1]: endCo2=[0,y]
     extraTile=savedTile
   elif x==10:
     savedTile=boardList[0][y]
+    if endCo1==[0,y]: endCo1=[-2,-2]
+    elif endCo2==[0,y]: endCo2=[-2,-2]
     for n in range(10):
       boardList[n][y]=boardList[n+1][y]
-      if boardList[n][y]==endTile2: endCo2=[n+1,y]
-      if boardList[n][y]==endTile1: endCo1=[n+1,y]
+      if boardList[n][y]==endTile2: endCo2=[n,y]
+      if boardList[n][y]==endTile1: endCo1=[n,y]
       boardList[n][y].updateCoords(n,y)
     boardList[10][y]=extraTile
     boardList[10][y].updateCoords(10,y)
+    if endCo1==[-2,-2] and "▓" in boardList[10][y].pic[1]: endCo1=[10,y]
+    elif endCo2==[-2,-2] and "▓" in boardList[10][y].pic[1]: endCo2=[10,y]
     extraTile=savedTile 
   else: return "error: 05"
-  extraTile.updateCoords(-1,-1)
+  extraTile.updateCoords(-2,-2)
   updateConnections()
   updateFStr()
   #return checkCoords()
@@ -236,7 +233,7 @@ def erasedLoopStrs(inputList):
           inputList.pop(min(m,n))
         return erasedLoopStrs(inputList)
   return inputList 
-def findPath(start:str,end:str):
+def findPath(start:str,end:str,dev=False):
   #findPath finds a path between the two tiles specified and outputs a list corresponding to the tiles needed to cross between the start and end points or, if there isnt a valid path, outputs False
   #I'll be honest I just started trying things and it worked eventually I'm not sure how good this is or if I messed something up
   global pathList
@@ -249,6 +246,7 @@ def findPath(start:str,end:str):
   if start!=end:
     if len(start)==3: optionsList=connections[start[0]+","+start[2]]
     elif len(start)==4: optionsList=connections[start[0]+start[1]+","+start[3]]
+    else: return "error: start length"
     for n in range(len(optionsList)):
       #check for a tile that hasnt been traveled on yet
       if optionsList[n] not in pathList: 
@@ -262,8 +260,9 @@ def findPath(start:str,end:str):
     checkedList=[]
     return False
   else: 
-    print("pathList:"+str(pathList))
-    print("checkedList:"+str(checkedList))
+    if dev: 
+      print("pathList:"+str(pathList))
+      print("checkedList:"+str(checkedList))
     z=erasedLoopStrs(pathList)
     pathList=[]
     checkedList=[]
@@ -395,7 +394,7 @@ def resetBoard():
   global extraTile
   global boardList
   boardList=[x0,x1,x2,x3,x4,x5,x6,x7,x8,x9,x10]
-  extraTile=tile(-1,-1,randTile())
+  extraTile=tile(-2,-2,randTile())
   # make the fixed tiles the correct ones
   x0[0].pic=topRightFixedPic
   x0[2].pic=triLeftFixedPic
@@ -434,6 +433,11 @@ def resetBoard():
   endTile1=boardList[endCo1[0]][endCo1[1]]
   endTile2=boardList[endCo2[0]][endCo2[1]]
 
+def playGame():
+  #actual command to play a round
+  while findPath(str(endCo1[0])+","+str(endCo1[1]),str(endCo2[0])+","+str(endCo2[1]))==False and devCode==0 or findPath(str(endCo2[0])+","+str(endCo2[1]),str(endCo1[0])+","+str(endCo1[1]))==False and devCode==0:
+    print(fStr)
+    getMoveInput()
 resetBoard()
 updateConnections()
 boardList[endCo1[0]][endCo1[1]].pic=makeEndPic(boardList[endCo1[0]][endCo1[1]])
@@ -443,22 +447,17 @@ while findPath(str(endCo1[0])+","+str(endCo1[1]),str(endCo2[0])+","+str(endCo2[1
   updateConnections()
 updateFStr()
 
-
 #begins the actual gameplay with inputs from the player and whatnot
 print(titleStr)
 input("  To begin, press enter...")
 print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
-
-while findPath(str(endCo1[0])+","+str(endCo1[1]),str(endCo2[0])+","+str(endCo2[1]))==False and devCode==0:
+playGame()
+if devCode==0:
   print(fStr)
-  getMoveInput()
-else:
-  if devCode==0:
-    print("  You Win!!")
-    print("  Your total move count was "+str(moveCount))
+  print("\n  You Win!!")
+  print("\n  Your total move count was "+str(moveCount)+".")
+  if input("\n  To play again, press enter. "):
     resetBoard()
+    updateConnections()
     updateFStr()
-    if input("\n  To play again, press enter. "):
-      print(fStr)
-
-
+    playGame()
