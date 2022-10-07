@@ -449,16 +449,16 @@ print(titleStr)
 input("  To begin, press enter...")
 print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
 
-while 1<2:
-  while findPath(str(endCo1[0])+","+str(endCo1[1]),str(endCo2[0])+","+str(endCo2[1]))==False and devCode==0:
-    print(fStr)
-    getMoveInput()
-  else:
-    if devCode==0:
-      print("  You Win!!")
-      print("  Your total move count was "+str(moveCount))
-      if input("\n  To play again, press enter. "):
-        resetBoard()
-        updateFStr()
-        print(fStr)
+while findPath(str(endCo1[0])+","+str(endCo1[1]),str(endCo2[0])+","+str(endCo2[1]))==False and devCode==0:
+  print(fStr)
+  getMoveInput()
+else:
+  if devCode==0:
+    print("  You Win!!")
+    print("  Your total move count was "+str(moveCount))
+    resetBoard()
+    updateFStr()
+    if input("\n  To play again, press enter. "):
+      print(fStr)
+
 
