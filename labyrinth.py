@@ -1,7 +1,6 @@
 import random
 import math
 
-
 class tile:
   # a tile is the basic unit used for the game
   def __init__(self,x:int,y:int,pic:list):
@@ -13,8 +12,6 @@ class tile:
     self.x=x
     self.y=y
     self.co=[x,y]
-
-
       
 topLeft=tile(-1,-1,[" ▒ ","▒▒ ","   "])
 topRight=tile(-1,-1,[" ▒ "," ▒▒","   "])
@@ -94,8 +91,7 @@ def updateFStr():
         if p!=10:fStr+="|"
       fStr+=(right(n,m)+"\n")
     fStr+="   +---+---+---+---+---+---+---+---+---+---+---+\n"
-  fStr+="     0  ↑↑↑  2  ↑↑↑  4  ↑↑↑  6  ↑↑↑  8  ↑↑↑  10"
-  fStr+="\n\n  Extra Tile:\n\n     +---+\n     |"+extraTile.pic[0]+"|\n     |"+extraTile.pic[1]+"|\n     |"+extraTile.pic[2]+"|\n     +---+\n"
+  fStr+="     0  ↑↑↑  2  ↑↑↑  4  ↑↑↑  6  ↑↑↑  8  ↑↑↑  10\n\n  Extra Tile:\n\n     +---+\n     |"+extraTile.pic[0]+"|\n     |"+extraTile.pic[1]+"|\n     |"+extraTile.pic[2]+"|\n     +---+\n"
   while "▓" not in fStr:
     #about once every ten times the board was generated the end tiles wouldn't be colored correctly and i couldnt figure out why so this fixes that if it happens
     boardList[endCo1[0]][endCo1[1]].pic=makeEndPic(boardList[endCo1[0]][endCo1[1]])
