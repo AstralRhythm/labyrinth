@@ -438,6 +438,16 @@ def playGame():
   while findPath(str(endCo1[0])+","+str(endCo1[1]),str(endCo2[0])+","+str(endCo2[1]))==False and devCode==0 or findPath(str(endCo2[0])+","+str(endCo2[1]),str(endCo1[0])+","+str(endCo1[1]))==False and devCode==0:
     print(fStr)
     getMoveInput()
+  if devCode==0:
+    print(fStr)
+    print("\n  You Win!!")
+    print("\n  Your total move count was "+str(moveCount)+".")
+    if input("\n  To play again, press enter. ")!="devCode":
+      resetBoard()
+      updateConnections()
+      print("\n\n\n\n\n\n\n\n\n\n\n")
+      updateFStr()
+      playGame()
 resetBoard()
 updateConnections()
 boardList[endCo1[0]][endCo1[1]].pic=makeEndPic(boardList[endCo1[0]][endCo1[1]])
@@ -452,12 +462,3 @@ print(titleStr)
 input("  To begin, press enter...")
 print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
 playGame()
-if devCode==0:
-  print(fStr)
-  print("\n  You Win!!")
-  print("\n  Your total move count was "+str(moveCount)+".")
-  if input("\n  To play again, press enter. "):
-    resetBoard()
-    updateConnections()
-    updateFStr()
-    playGame()
